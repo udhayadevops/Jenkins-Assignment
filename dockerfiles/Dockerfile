@@ -1,11 +1,16 @@
 # Use the official Nginx image as a base image
 FROM nginx:latest
 
+# Directory within the container to store configuration files
+WORKDIR /etc/nginx
+
 # Copy your custom Nginx configuration file to the container
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY Jenkins-Assignment/configs/nginx.conf ./nginx.conf
+
+COPY Jenkins-Assignment/index.html /usr/share/nginx/html/index.html
 
 # Expose the ports you want to use for HTTP and HTTPS (optional)
-# EXPOSE 80
+EXPOSE 80
 # EXPOSE 443
 
 # You can also copy SSL certificates if needed
