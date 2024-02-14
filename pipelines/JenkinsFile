@@ -3,7 +3,8 @@ pipeline {
     stages {
         stage('Git checkout') {
             steps {
-                git branch: 'dev', credentialsId: 'infra-repo', url: 'https://github.com/Knowledgesprint-Technologies/FN-INT-App.git'
+                //git branch: 'dev', credentialsId: 'infra-repo', url: 'https://github.com/Knowledgesprint-Technologies/FN-INT-App.git'
+                git branch: 'k8s', url: 'https://github.com/udhayadevops/Jenkins-Assignment.git'
             }
         }
 
