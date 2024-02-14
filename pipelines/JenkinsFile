@@ -11,9 +11,10 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    def dockerfilePath = "/K8s/dockrfiles/"
-                    def dockerHubUsername = "udhayadevops"
-                    docker.build("${dockerHubUsername}/nginx-custom", "-f ${dockerfilePath}/Dockerfile ${dockerfilePath}")
+                    //def dockerfilePath = "/K8s/dockrfiles"
+                    //def dockerHubUsername = "udhayadevops"
+                sh 'docker build . -t test -f k8s/dockerfiles/Dockerfile'
+                    //docker.build("${dockerHubUsername}/nginx-custom", "-f ${dockerfilePath}/Dockerfile ${dockerfilePath}")
                 }
             }
         }
