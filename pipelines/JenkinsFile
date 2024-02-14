@@ -40,6 +40,7 @@ pipeline {
                 sh "ssh dockeradm@43.205.136.83 echo pushed docker image"
             }
         }
+*/
     }
 }
-*/
+
