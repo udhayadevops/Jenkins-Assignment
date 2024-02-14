@@ -15,7 +15,7 @@ pipeline {
                 script{
                     def dockerfilePath = "/K8s/dockrfiles/"
                     def dockerHubUsername = "udhayadevops"
-                    docker.build("${dockerHubUsername}/nginx-custom", "-f ${dockerfilePath}/Dockerfile ${dockerfilePath}")'
+                    docker.build("${dockerHubUsername}/nginx-custom", "-f ${dockerfilePath}/Dockerfile ${dockerfilePath}")
                 }
             }
         }
