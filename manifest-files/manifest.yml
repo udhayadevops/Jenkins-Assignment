@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fn-int-pandoc-nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fn-int-pandoc-nginx
+  template:
+    metadata:
+      labels:
+        app: fn-int-pandoc-nginx
+    spec:
+      containers:
+      - name: fn-int-pandoc-nginx-container
+        image: mohammed2asif/testing-int:39
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fn-int-pandoc-nginx-service
+spec:
+  selector:
+    app: fn-int-pandoc-nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

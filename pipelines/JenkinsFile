@@ -1,0 +1,56 @@
+pipeline {
+    agent {
+        label 'worker'
+    }
+
+    stages {
+        stage('Git checkout') {
+            steps {
+                git branch: 'dev', credentialsId: 'infra-repo', url: 'https://github.com/Knowledgesprint-Technologies/FN-INT-App.git'
+            }
+        }
+        stage('SonarQube Analysis') {
+         steps {
+             script {
+                 def scannerHome = tool 'SonarQubeScanner'
+                 withSonarQubeEnv('sonarqube') {
+                   sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=Sonarqube -Dsonar.host.url=http://65.0.130.190:9000/ -Dsonar.login=sqp_4210bfffff06225bea492f4bdf5d24044fa10a3d"
+                 }
+               }
+             }
+        }
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+        stage('Copy to docker vm'){
+            steps {
+                sh 'ssh dockeradm@43.205.136.83 "rm -rf -v /home/dockeradm/source && mkdir -v /home/dockeradm/source"'
+                sh "scp -r * dockeradm@43.205.136.83:~/source"
+            }
+        }
+        stage('Build the docker image'){
+            steps {
+                sh 'ssh dockeradm@43.205.136.83 "docker build . -t mohammed2asif/testing-int:${BUILD_NUMBER} -f source/dockerfiles/Dockerfile"'
+            }
+        }
+        stage('Test docker image'){
+            steps {
+                sh 'ssh dockeradm@43.205.136.83 "docker run -dp 80:80 --name testing_cont mohammed2asif/testing-int:${BUILD_NUMBER}"'
+                sh 'ssh dockeradm@43.205.136.83 "sleep 60"'
+                sh 'ssh dockeradm@43.205.136.83 "docker rm -f testing_cont"'
+                
+            }
+        }
+        stage('Push Docker Image To Repo') {
+            steps {
+                sh "ssh dockeradm@43.205.136.83 docker login -u mohammed2asif -p dckr_pat_hNpMEockEd_ZJX3UNVrgT4gxEjc" 
+                sh "ssh dockeradm@43.205.136.83 docker push mohammed2asif/testing-int:${BUILD_NUMBER}"
+                sh "ssh dockeradm@43.205.136.83 echo pushed docker image"
+            }
+        }
+    }
+}
