@@ -3,12 +3,11 @@ pipeline {
     stages {
         stage('Git checkout') {
             steps {
-                //git branch: 'dev', credentialsId: 'infra-repo', url: 'https://github.com/Knowledgesprint-Technologies/FN-INT-App.git'
                 git branch: 'k8s', url: 'https://github.com/udhayadevops/Jenkins-Assignment.git'
             }
         }
         
-         stage('Print Workspace') {
+        stage('Print Workspace') {
             steps {
                 echo "Workspace Directory: ${WORKSPACE}"
             }
@@ -17,8 +16,6 @@ pipeline {
         stage('Build docker image'){
             steps{
                 script{
-                    //def dockerfilePath = "/K8s/dockrfiles"
-                    //def dockerHubUsername = "udhayadevops"
                     sh '''
                         cp -r ${WORKSPACE}/configs/nginx.conf ${WORKSPACE}/index.html ${WORKSPACE}/dockerfiles/
                         docker build -t test -f ${WORKSPACE}/dockerfiles/Dockerfile ${WORKSPACE}
@@ -26,27 +23,19 @@ pipeline {
                 }
             }
         }
-/*
-        stage('Build the docker image'){
-            steps {
-                sh 'ssh dockeradm@43.205.136.83 "docker build . -t mohammed2asif/testing-int:${BUILD_NUMBER} -f source/dockerfiles/Dockerfile"'
-            }
-        }
-        stage('Test docker image'){
-            steps {
-                sh 'ssh dockeradm@43.205.136.83 "docker run -dp 80:80 --name testing_cont mohammed2asif/testing-int:${BUILD_NUMBER}"'
-                sh 'ssh dockeradm@43.205.136.83 "sleep 60"'
-                sh 'ssh dockeradm@43.205.136.83 "docker rm -f testing_cont"'
-                
-            }
-        }
+
         stage('Push Docker Image To Repo') {
             steps {
-                sh "ssh dockeradm@43.205.136.83 docker login -u mohammed2asif -p dckr_pat_hNpMEockEd_ZJX3UNVrgT4gxEjc" 
-                sh "ssh dockeradm@43.205.136.83 docker push mohammed2asif/testing-int:${BUILD_NUMBER}"
-                sh "ssh dockeradm@43.205.136.83 echo pushed docker image"
+                script {
+                    // Replace 'YOUR_ACCESS_TOKEN' with your actual Docker Hub access token
+                    withCredentials([string(credentialsId: 'docker-hub-access-token', variable: 'DOCKER_ACCESS_TOKEN')]) {
+                        sh "echo \"$DOCKER_ACCESS_TOKEN\" | docker login --username udhayadevops --password-stdin"
+                        sh "docker tag test udhayadevops/testing-int:${BUILD_NUMBER}"
+                        sh "docker push udhayadevops/testing-int:${BUILD_NUMBER}"
+                        sh "echo Pushed Docker image to Docker Hub"
+                    }
+                }
             }
         }
-*/
     }
 }
