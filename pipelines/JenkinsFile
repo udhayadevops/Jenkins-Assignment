@@ -7,14 +7,22 @@ pipeline {
                 git branch: 'k8s', url: 'https://github.com/udhayadevops/Jenkins-Assignment.git'
             }
         }
+        
+         stage('Print Workspace') {
+            steps {
+                echo "Workspace Directory: ${WORKSPACE}"
+            }
+        }
 
         stage('Build docker image'){
             steps{
                 script{
                     //def dockerfilePath = "/K8s/dockrfiles"
                     //def dockerHubUsername = "udhayadevops"
-                sh 'docker build . -t test -f /dockerfiles/DockerFile'
-                    //docker.build("${dockerHubUsername}/nginx-custom", "-f ${dockerfilePath}/Dockerfile ${dockerfilePath}")
+                    sh '''
+                        cp -r ${WORKSPACE}/configs/nginx.conf ${WORKSPACE}/index.html ${WORKSPACE}/dockerfiles/
+                        docker build -t test -f ${WORKSPACE}/dockerfiles/Dockerfile ${WORKSPACE}
+                    '''
                 }
             }
         }
@@ -42,4 +50,3 @@ pipeline {
 */
     }
 }
-
