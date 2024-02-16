@@ -37,5 +37,36 @@ pipeline {
                 }
             }
         }
+        
+        stage('Install kubectl') {
+            steps {
+                script {
+                    // Check if kubectl is already installed
+                    def kubectlInstalled = sh(script: 'which kubectl', returnStatus: true) == 0
+                    if (!kubectlInstalled) {
+                        // Download and install kubectl
+                        sh 'curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl'
+                        sh 'chmod +x ./kubectl'
+                        sh 'sudo mv ./kubectl /usr/local/bin/kubectl'
+                    }
+                }
+            }
+        }
+        
+        stage('Check kubectl version') {
+            steps {
+                // Add the directory to PATH
+                sh 'export PATH=$PATH:/var/lib/jenkins/bin'
+
+                // Check kubectl version
+                sh 'kubectl version --client'
+            }
+        }
+        stage('Deploy to Minikube') {
+            steps {
+                // Now kubectl should be available for use
+                sh 'kubectl apply -f ${WORKSPACE}/manifest-files --kubeconfig=/path/to/your/kubeconfig'
+            }
+        }
     }
 }
