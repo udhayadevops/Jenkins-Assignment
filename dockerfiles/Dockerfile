@@ -5,9 +5,9 @@ FROM nginx:latest
 WORKDIR /etc/nginx
 
 # Copy your custom Nginx configuration file to the container
-COPY /configs/nginx.conf ./nginx.conf
+//COPY /configs/nginx.conf ./nginx.conf
 
-COPY ./index.html /usr/share/nginx/html/index.html
+//COPY ./index.html /usr/share/nginx/html/index.html
 
 # Expose the ports you want to use for HTTP and HTTPS (optional)
 EXPOSE 80
