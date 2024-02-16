@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Replace 'YOUR_ACCESS_TOKEN' with your actual Docker Hub access token
-                    withCredentials([string(credentialsId: 'docker-hub-access-token', variable: 'DOCKER_ACCESS_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'docker-hub-credentials', variable: 'DOCKER_ACCESS_TOKEN')]) {
                         sh "echo \"$DOCKER_ACCESS_TOKEN\" | docker login --username udhayadevops --password-stdin"
                         sh "docker tag test udhayadevops/testing-int:${BUILD_NUMBER}"
                         sh "docker push udhayadevops/testing-int:${BUILD_NUMBER}"
